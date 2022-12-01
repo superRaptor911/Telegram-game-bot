@@ -1,8 +1,12 @@
 import TelegramBot from 'node-telegram-bot-api';
 import * as dotenv from 'dotenv';
 import express from 'express';
+import bodyParser from 'body-parser';
 
 const app = express();
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
 const gameShortName = 'AsteroidAttk';
 
 const port = process.env.PORT || 3000;
@@ -62,9 +66,10 @@ async function runBot(): Promise<void> {
         score: String(currentScore),
       }).toString();
 
-      await bot.answerCallbackQuery(query.id, {
-        url: 'https://www.game1.superraptor911.tech/?' + urlParams,
-      });
+      const site = 'https://www.game1.superraptor911.tech/?';
+      const url = site + urlParams;
+      console.log('url', url);
+      await bot.answerCallbackQuery(query.id, { url: url });
     } else {
       await bot.answerCallbackQuery(query.id, { text: 'Wrong game' });
     }
@@ -83,14 +88,17 @@ async function runBot(): Promise<void> {
   });
 }
 
-app.get(`/highscore/${gameShortName}`, (req) => {
-  const chatId = req.query.chatId as string;
-  const score = parseInt(req.query.score as string);
+app.post(`/highscore/${gameShortName}`, async (req, res) => {
+  const chatId = req.body.chat_id as string;
+  const score = parseInt(req.body.score as string);
 
   const query = queries[chatId];
+  console.log('query', query);
   if (query) {
-    bot.setGameScore(query.user_id, score, query);
+    await bot.setGameScore(query.user_id, score, query);
   }
+
+  res.send('ok');
 });
 
 app.listen(port, () => {
