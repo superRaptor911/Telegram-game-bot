@@ -1,7 +1,7 @@
-# Telegram Movie BOT
+# Telegram GAME BOT
 
-A Telegram bot to fetch movies.
+A Telegram game bot for my games 
 
 ## Official instance
 
-[M1](https://t.me/m1_2022_bot)
+[Game](https://t.me/game_raptor_bot)
